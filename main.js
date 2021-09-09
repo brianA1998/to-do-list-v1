@@ -1,7 +1,3 @@
-import { mdiShareVariant } from '@mdi/js';
-
-
-
 const input = document.querySelector("input");
 const addBtn = document.querySelector(".btn-add");
 const ul = document.querySelector("ul");
@@ -32,7 +28,6 @@ addBtn.addEventListener("click", (e) => {
 
 function shareTask() {
     const btnShare = document.createElement("button");
-    btnShare.textContent = "Compartir";
     btnShare.className = "btn-share";
 
     btnShare.addEventListener("click", (e) => {
@@ -54,6 +49,7 @@ function copyTask() {
 
     const btnCopy = document.createElement("button");
     btnCopy.textContent = "Copiar";
+    btnCopy.className = "btn-copy";
 
     btnCopy.addEventListener("click", (e) => {
         const item = document.querySelector("p");

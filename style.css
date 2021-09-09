@@ -99,19 +99,20 @@ body {
   }
 
   .btn-share {
-    padding: 5px 15px;
+    padding: 8px 15px;
+    background-image: url("/toDoList-v1/share-variant.png");
+    background-color: transparent;
     border: none;
-    color: white;
-    font-family: fantasy;
-    background-color: teal;
-    font-size: 1.4rem;
-    outline: none;
+    cursor: pointer;
+    width: auto;
+    height: auto;
   }
 
-  .btn-share:hover {
-    cursor: pointer;
-    background-color: darkcyan;
+  #btnFullscreen{
+    background-image: url('')
   }
+
+
   
 
   .empty {
