@@ -26,41 +26,40 @@ addBtn.addEventListener("click", (e) => {
 });
 
 
-function shareTask(){
+function shareTask() {
     const btnShare = document.createElement("button");
     btnShare.textContent = "Compartir";
     btnShare.className = "btn-share";
-    
-    btnShare.addEventListener("click",(e)=>{
+
+    btnShare.addEventListener("click", (e) => {
         const item = document.querySelector("p");
         navigator.share({
             title: 'MI TAREA',
             text: item.textContent,
             url: 'https://whatwebcando.today/'
-          })
-          .then(() => console.log('Successful share'))
-          .catch(error => console.log('Error sharing:', error));
-      });
+        })
+            .then(() => console.log('Successful share'))
+            .catch(error => console.log('Error sharing:', error));
+    });
 
-      return btnShare;
+    return btnShare;
 
 }
 
-function copyTask(){
+function copyTask() {
 
     const btnCopy = document.createElement("button");
     btnCopy.textContent = "Copiar";
-    
-    btnCopy.addEventListener("click",(e)=>{
+
+    btnCopy.addEventListener("click", (e) => {
         const item = document.querySelector("p");
-       
+
         navigator.clipboard.writeText(item.textContent)
         console.log(item.textContent)
         alert('Tarea copiada');
     });
     return btnCopy;
 }
-
 
 
 function addDeleteBtn() {
@@ -82,3 +81,35 @@ function addDeleteBtn() {
 
     return deleteBtn;
 }
+
+document.getElementById('btnFullscreen').addEventListener('click', function () {
+    toggleFullscreen();
+});
+
+
+function toggleFullscreen(elem) {
+    elem = elem || document.documentElement;
+    if (!document.fullscreenElement && !document.mozFullScreenElement &&
+        !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+            elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+}
+

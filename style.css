@@ -113,7 +113,10 @@ body {
     background-color: darkcyan;
   }
   
-  
+  #btn-fullscreen:-webkit-full-screen {
+    width: 100%;
+    height: 100%;
+  }
   
   .empty {
     color: darkslategrey;
