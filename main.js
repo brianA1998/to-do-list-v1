@@ -1,7 +1,10 @@
 const input = document.querySelector("input");
 const addBtn = document.querySelector(".btn-add");
 const ul = document.querySelector("ul");
+lista = document.getElementById("lista");
 const empty = document.querySelector(".empty");
+let tareas = [];
+let geo = { lat: null, lon: null };
 
 
 addBtn.addEventListener("click", (e) => {
@@ -18,11 +21,23 @@ addBtn.addEventListener("click", (e) => {
         li.appendChild(addDeleteBtn());
         li.appendChild(shareTask())
         li.appendChild(copyTask())
+
+        recuperarUbicacion();
+        console.log(geo)
         ul.appendChild(li);
 
         input.value = "";
         empty.style.display = "none";
     }
+
+    
+    tareas.push({texto: text,
+                "completado" : false,
+                "ubicacion" : {"lat": geo.lat,"lon": geo.lon}
+    })
+
+    localStorage.setItem("tareas", JSON.stringify(tareas));
+
 });
 
 
@@ -111,5 +126,25 @@ function toggleFullscreen(elem) {
             document.webkitExitFullscreen();
         }
     }
+}
+
+function recuperarUbicacion() {
+
+    if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+            function (location) {
+                geo.lat = location.coords.latitude;
+                geo.lon = location.coords.longitude;
+            },
+            function (err) {
+                console.warn(err);
+                geo.lat = null;
+                geo.lon = null;
+            }
+        );
+    } else {
+        return null;
+    }
+
 }
 
