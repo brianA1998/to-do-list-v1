@@ -1,131 +1,93 @@
-const input = document.querySelector("input");
-const addBtn = document.querySelector(".btn-add");
-const ul = document.querySelector("ul");
+nuevaTareaInput = document.getElementById("nuevaTareaInput");
+agregarBtn = document.getElementById("agregarBtn");
 lista = document.getElementById("lista");
-const empty = document.querySelector(".empty");
+fullscreenBtn = document.getElementById("fullscreenBtn");
 let tareas = [];
+
 let geo = { lat: null, lon: null };
 
-
-addBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-
-    const text = input.value;
-
-    if (text !== "") {
-        const li = document.createElement("li");
-        const p = document.createElement("p");
-        p.textContent = text;
-
-        li.appendChild(p);
-        li.appendChild(addDeleteBtn());
-        li.appendChild(shareTask())
-        li.appendChild(copyTask())
-
-        recuperarUbicacion();
-        console.log(geo)
-        ul.appendChild(li);
-
-        input.value = "";
-        empty.style.display = "none";
+//Comportamiento del botón fullscreen
+fullscreenBtn.addEventListener("click", function (e) {
+    if (document.fullscreenElement == null) {
+        document.documentElement.requestFullscreen();
+        fullscreenBtn.innerHTML = "💨";
+    } else {
+        document.exitFullscreen();
+        fullscreenBtn.innerHTML = "📺";
     }
+});
 
-    
-    tareas.push({texto: text,
-                "completado" : false,
-                "ubicacion" : {"lat": geo.lat,"lon": geo.lon}
+//Comportamiento del botón agregar
+agregarBtn.addEventListener("click", function (e) {
+    e.preventDefault(); // evita el reload de la página
+    const textoDeLaTarea = nuevaTareaInput.value;
+    agregarTarea(textoDeLaTarea);
+});
+
+function agregarTarea(texto) {
+    //crear elemento li
+    const nuevoLi = document.createElement("li");
+    nuevoLi.setAttribute("data-id","sssssss")
+    nuevoLi.innerHTML =
+        `
+    <input type="checkbox">
+    <p>${texto}</p>
+    <button onclick="copiarTarea(this)">Copiar</button>
+    <button onclick="compartirTarea(this)">Compartir</button>
+    <button onclick="eliminarTarea(this)">Eliminar</button>
+    `;
+
+    // puedo pedir ubicacion para cada tarea? como?
+
+    lista.prepend(nuevoLi);
+    tareas.push({
+        texto: texto,
+        "completado": false,
+        "ubicacion": { "lat": geo.lat, "lon": geo.lon }
     })
 
     localStorage.setItem("tareas", JSON.stringify(tareas));
-
-});
-
-
-function shareTask() {
-    const btnShare = document.createElement("button");
-    btnShare.className = "btn-share";
-
-    btnShare.addEventListener("click", (e) => {
-        const item = document.querySelector("p");
-        navigator.share({
-            title: 'MI TAREA',
-            text: item.textContent,
-            url: 'https://whatwebcando.today/'
-        })
-            .then(() => console.log('Successful share'))
-            .catch(error => console.log('Error sharing:', error));
-    });
-
-    return btnShare;
-
 }
 
-function copyTask() {
-
-    const btnCopy = document.createElement("button");
-    btnCopy.textContent = "Copiar";
-    btnCopy.className = "btn-copy";
-
-    btnCopy.addEventListener("click", (e) => {
-        const item = document.querySelector("p");
-
-        navigator.clipboard.writeText(item.textContent)
-        console.log(item.textContent)
-        alert('Tarea copiada');
-    });
-    return btnCopy;
+function eliminarTarea(e) {
+    e.parentElement.remove();
 }
 
+function copiarTarea(e) {
+    //e.parentElement.remove();
+    console.log("Copiar!");
 
-function addDeleteBtn() {
-    const deleteBtn = document.createElement("button");
+    if (navigator.clipboard != undefined) {
 
-    deleteBtn.textContent = "X";
-    deleteBtn.className = "btn-delete";
-
-    deleteBtn.addEventListener("click", (e) => {
-        const item = e.target.parentElement;
-        ul.removeChild(item);
-
-        const items = document.querySelectorAll("li");
-
-        if (items.length === 0) {
-            empty.style.display = "block";
-        }
-    });
-
-    return deleteBtn;
-}
-
-document.getElementById('btnFullscreen').addEventListener('click', function () {
-    toggleFullscreen();
-});
-
-
-function toggleFullscreen(elem) {
-    elem = elem || document.documentElement;
-    if (!document.fullscreenElement && !document.mozFullScreenElement &&
-        !document.webkitFullscreenElement && !document.msFullscreenElement) {
-        if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-        } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-        } else if (elem.mozRequestFullScreen) {
-            elem.mozRequestFullScreen();
-        } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-        }
-    } else {
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
+        navigator.clipboard.writeText(e.parentElement.children[1].innerText)
+            .then(
+                () => console.log("Copiado!")
+            )
+            .catch(err => console.error("Ups!", err));
     }
+}
+
+function compartirTarea(e) {
+    if (!("share" in navigator)) { //si no esta API share en el navegador tiro un mensaje
+        console.log("😭");
+        return;
+    }
+
+    text = e.parentElement.children[1].innerText;
+
+    navigator.share(
+        // JSON se basa en la sintaxis que tiene Javascript para crear objetos
+        {
+            title: 'Te comparto una tarea de mi lista',
+            text: text,
+            url: document.URL
+        }
+    ).then(
+        () => console.log('Compartido!')
+    )
+        .catch(
+            error => console.error('Error:', error)
+        );
 }
 
 function recuperarUbicacion() {
@@ -148,3 +110,25 @@ function recuperarUbicacion() {
 
 }
 
+window.onload = function () {
+    recuperarUbicacion();
+    console.log(geo);
+
+    tareas = JSON.parse(localStorage.getItem("tareas")) || [];
+
+    for (let i = 0; i < tareas.length; i++) {
+        //agregarTarea(tareas[i].texto);
+        //crear elemento li
+        const nuevoLi = document.createElement("li");
+        nuevoLi.innerHTML =
+            `
+            <input type="checkbox">
+            <p>${tareas[i].texto}</p>
+            <button onclick="copiarTarea(this)">Copiar</button>
+            <button onclick="compartirTarea(this)">Compartir</button>
+            <button onclick="eliminarTarea(this)">Eliminar</button>
+            `;
+        
+        lista.prepend(nuevoLi);
+    }
+}
